@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+    <meta charset=utf-8>
+    <meta http-equiv=X-UA-Compatible content="IE=edge">
+    <meta name=viewport content="width=device-width,initial-scale=1,user-scalable=0">
+    <link rel=icon href=favicon.ico>
+    <link rel=stylesheet href=./static/fonts_1/icomoon.css>
+    <link rel=stylesheet href=./static/fonts_7/icomoon.css>
+    <title>北大树洞</title>
+    <script>
+        var ie = IEVersion();
+        if (ie <= 11) {
+            alert("浏览器版本过低，请升级浏览器、双核浏览器请切换极速模式。");
+            window.location.href = "https://support.dmeng.net/upgrade-your-browser.html";
+        }
+
+        function IEVersion() {
+            var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+            var isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1; //判断是否IE<11浏览器
+            var isEdge = userAgent.indexOf("Edge") > -1 && !isIE; //判断是否IE的Edge浏览器
+            var isIE11 = userAgent.indexOf('Trident') > -1 && userAgent.indexOf("rv:11.0") > -1;
+            if (isIE) {
+                var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
+                reIE.test(userAgent);
+                var fIEVersion = parseFloat(RegExp["$1"]);
+                if (fIEVersion == 7) {
+                    return 7;
+                } else if (fIEVersion == 8) {
+                    return 8;
+                } else if (fIEVersion == 9) {
+                    return 9;
+                } else if (fIEVersion == 10) {
+                    return 10;
+                } else {
+                    return 6; //IE版本<=7
+                }
+            } else if (isEdge) {
+                return 'edge'; //edge
+            } else if (isIE11) {
+                return 11; //IE11
+            } else {
+                return 15; //不是ie浏览器
+            }
+        }
+    </script>
+    <link href=css/chunk-025fb152.6241a414.css rel=prefetch>
+    <link href=css/chunk-0da3c94a.2d72f0dd.css rel=prefetch>
+    <link href=css/chunk-176d174a.bc9ae787.css rel=prefetch>
+    <link href=css/chunk-2e9fb88a.b905e480.css rel=prefetch>
+    <link href=css/chunk-30367ed1.6bf2cf60.css rel=prefetch>
+    <link href=css/chunk-4f67aa6b.214b6e61.css rel=prefetch>
+    <link href=css/chunk-6cf202b9.a848287e.css rel=prefetch>
+    <link href=css/chunk-70ad58bc.0d37598b.css rel=prefetch>
+    <link href=css/chunk-831696ce.de46de2f.css rel=prefetch>
+    <link href=css/chunk-a78747b0.b5efde98.css rel=prefetch>
+    <link href=css/chunk-b4a8ea90.55f5e09c.css rel=prefetch>
+    <link href=css/chunk-fcbc73c2.6eb52e60.css rel=prefetch>
+    <link href=js/chunk-025fb152.fc852931.js rel=prefetch>
+    <link href=js/chunk-0da3c94a.8bb8626c.js rel=prefetch>
+    <link href=js/chunk-176d174a.58a46780.js rel=prefetch>
+    <link href=js/chunk-204fccac.70482f25.js rel=prefetch>
+    <link href=js/chunk-2e9fb88a.ed81bf66.js rel=prefetch>
+    <link href=js/chunk-30367ed1.31dcd3bb.js rel=prefetch>
+    <link href=js/chunk-4f67aa6b.d2413c3d.js rel=prefetch>
+    <link href=js/chunk-6cf202b9.f5561e58.js rel=prefetch>
+    <link href=js/chunk-70ad58bc.d9736d82.js rel=prefetch>
+    <link href=js/chunk-831696ce.e0a0cebe.js rel=prefetch>
+    <link href=js/chunk-a78747b0.164f9e69.js rel=prefetch>
+    <link href=js/chunk-b4a8ea90.9865154e.js rel=prefetch>
+    <link href=js/chunk-c6cb2abe.b30178fc.js rel=prefetch>
+    <link href=js/chunk-fcbc73c2.1e4bce11.js rel=prefetch>
+    <link href=css/app.391dbb1a.css rel=preload as=style>
+    <link href=js/app.3710b35d.js rel=preload as=script>
+    <link href=css/app.391dbb1a.css rel=stylesheet>
+    <link href=css/chunk-import.data.css rel=stylesheet>
+</head>
+
+<body><noscript><strong>We're sorry but antd-demo doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript>
+    <div id=app></div>
+    <!-- <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker
+              .register('/service-worker.js',{
+                scope: "/",
+              })
+              .then(function(registration) {
+                console.log(registration);
+              })
+              .catch(function(err) {
+                console.log(err);
+              });
+          }
+
+    </script> -->
+    <script src=modify.js></script>
+    <script src=js/app.3710b35d.js></script>
+    <script src=import_data.js></script>
+</body>
+
+</html>
