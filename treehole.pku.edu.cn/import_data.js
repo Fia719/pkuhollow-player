@@ -171,7 +171,7 @@ function init_welcome_hole() {
 		"holes": [
 			{
 				"pid": 1,
-				"text": "欢迎来到树洞存档阅读网站，你可以在这里导入你通过树洞导出插件(https://greasyfork.org/zh-CN/scripts/465805-pku-hole-export-tool)得到的json文件，支持多个文件导入，目前暂不支持txt格式文件导入。\n请注意，这是一个纯静态网站，不会将用户导入的数据上传至网络，用户导入的文件只会存储在本地，请大家放心自己的隐私不会泄露。\n本网站通过拦截用户发送请求的404回复，使用浏览器缓存替换返回结果以变相实现对api请求的回复，因此会有一些无意义的网络流量产生。",
+				"text": "欢迎来到树洞存档阅读网站，你可以在这里导入你通过树洞导出插件(https://greasyfork.org/zh-CN/scripts/465805-pku-hole-export-tool)得到的json文件，支持多个文件导入，目前暂不支持txt格式文件导入。\n请注意，这是一个纯静态网站，不会将用户导入的数据上传至网络，用户导入的文件只会存储在本地，请大家放心自己的隐私不会泄露。\n本网站通过拦截用户发送请求的404回复，使用浏览器缓存替换返回结果以变相实现对api请求的回复，因此会有一些无意义的网络流量产生。\nGithub地址：https://github.com/w1ndman/treehole-player",
 				"type": "text",
 				"timestamp": 1627948170,
 				"reply": 1,
@@ -201,7 +201,7 @@ function init_welcome_hole() {
 					{
 						"cid": 2,
 						"pid": 1,
-						"text": "大家若有希望展示在这里的留言，可以在Github上提issue留言，有一定概率会被合并入此洞～",
+						"text": "大家若有希望展示在这里的留言，可以在Github上提issue留言，有一定概率会被合并入此洞，具体格式请看README～",
 						"timestamp": 1627948170,
 						"tag": Github,
 						"comment_id": null,
