@@ -203,7 +203,7 @@ function init_welcome_hole() {
 						"pid": 1,
 						"text": "大家若有希望展示在这里的留言，可以在Github上提issue留言，有一定概率会被合并入此洞～",
 						"timestamp": 1627948170,
-						"tag": null,
+						"tag": Github,
 						"comment_id": null,
 						"name": "please issue on Github!!",
 						"quote": null
