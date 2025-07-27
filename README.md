@@ -5,7 +5,7 @@
 
 本网站通过拦截用户发送请求的404回复，使用浏览器缓存替换返回结果以变相实现对api请求的回复，因此会有一些无意义的网络流量产生。
 
-若大家有留言的想法，可以在issue中提交，可以直接提交一个纯文本，也可以指定想要的name以及timestamp等信息，例如：
+若大家有留言的想法，可以在issue中提交，可以直接提交一个纯文本，也可以指定想要的name以及tag,timestamp等信息，例如：
 
 ```json
 {
@@ -13,7 +13,7 @@
     "pid": 1,
     "text": "大家若有希望展示在这里的留言，可以在Github上提issue留言，有一定概率会被合并入此洞～",
     "timestamp": 1627948170,
-    "tag": null,
+    "tag": "Github",
     "comment_id": null,
     "name": "please issue on Github!!",
     "quote": null
