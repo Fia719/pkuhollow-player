@@ -299,7 +299,6 @@ function set_attention(pid) {
 
 (function () {
     'use strict';
-    init_help();
 
     const OriginalXHR = window.XMLHttpRequest;
 
