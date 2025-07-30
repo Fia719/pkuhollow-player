@@ -318,9 +318,8 @@ function set_attention(pid) {
             },
 
             send(body) {
-                console.log("[FakeXHR] 拦截并模拟响应", this._url);
+                console.log("[FakeXHR] processing: ", this._url);
 
-                // 根据不同 URL 返回不同内容
                 let responseData = {};
 
                 if (
@@ -380,17 +379,14 @@ function set_attention(pid) {
         return xhr;
     }
 
-    // 代理构造函数
     window.XMLHttpRequest = function () {
         const fake = createFakeXHR();
         const real = new OriginalXHR();
 
-        // 判断 URL 是否要拦截，在 open 中实现
         const proxy = new Proxy(fake, {
             get(target, prop) {
                 if (prop === 'open') {
                     return function (method, url, async) {
-                        // 控制是否要拦截
                         if (
                             (url.includes("api/pku_hole") && url.includes("page")) ||
                             url.includes("pku_comment_v3") ||
