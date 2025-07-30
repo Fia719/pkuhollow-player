@@ -297,111 +297,145 @@ function set_attention(pid) {
     }
 }
 
-
-function update_get_response(url, request) {
-    // let response_json = JSON.parse(request.response);
-    let response_status = request.status;
-    console.log("update_get_response", url, response_status);
-    if (url.includes("api/pku_hole") && url.includes("page") && (!url.includes("keyword"))) {
-        const kwargs = parse_args(url);
-        console.log(kwargs);
-        modifiedtext = JSON.stringify(gen_hole_pages(kwargs));
-        Object.defineProperty(request, 'responseText', { value: modifiedtext });
-        // status = 200;
-        Object.defineProperty(request, 'status', { value: 200 });
-
-    } else if (url.includes("api/pku_hole") && url.includes("page") && (url.includes("keyword"))) {
-        const kwargs = parse_args(url);
-        let keyword = kwargs["keyword"];
-        modifiedtext = JSON.stringify(gen_search_page(kwargs));
-        Object.defineProperty(request, 'responseText', { value: modifiedtext });
-        // status = 200;
-        Object.defineProperty(request, 'status', { value: 200 });
-
-    } else if (url.includes("pku_comment_v3")) {
-        const kwargs = parse_args(url);
-        let pid = Number(url.match(/comment_v3\/(\d+)\?/)[1]);
-        // console.log(kwargs, pid);
-        modifiedtext = JSON.stringify(gen_hole_comment(kwargs, pid));
-        Object.defineProperty(request, 'responseText', { value: modifiedtext });
-        // status = 200;
-        Object.defineProperty(request, 'status', { value: 200 });
-
-    } else if (url.includes("/api/pku/")) {
-        console.log("update_get_response", url);
-        let pid = Number(url.split("/api/pku/")[1]);
-        modifiedtext = JSON.stringify(gen_pku_hole(pid));
-        Object.defineProperty(request, 'responseText', { value: modifiedtext });
-        // status = 200;
-        Object.defineProperty(request, 'status', { value: 200 });
-
-    } else if (url.includes("/api/pku_hole")) {
-        let pid = Number(url.split("pid=")[1]);
-        modifiedtext = JSON.stringify(gen_pid_hole_page(pid));
-        Object.defineProperty(request, 'responseText', { value: modifiedtext });
-        // status = 200;
-        Object.defineProperty(request, 'status', { value: 200 });
-
-    } else if (url.includes("api/follow_v2")) {
-        const kwargs = parse_args(url);
-        modifiedtext = JSON.stringify(gen_followed_holes(kwargs));
-        Object.defineProperty(request, 'responseText', { value: modifiedtext });
-        // status = 200;
-        Object.defineProperty(request, 'status', { value: 200 });
-
-    }
-    return;
-
-}
-
-function update_post_response(url, request) {
-    let response_status = request.status;
-    if (url.includes("/api/pku_attention")) {
-        console.log("update pku_attention", url);
-        let pid = Number(url.split("pku_attention/")[1]);
-        let resp = set_attention(pid);
-        modifiedtext = JSON.stringify(resp);
-        Object.defineProperty(request, 'responseText', { value: modifiedtext });
-        // status = 200;
-        Object.defineProperty(request, 'status', { value: 200 });
-    }
-}
-
-function handle_get_response(url, request) {
-    // console.log(url, request.status);
-    // return;
-    if (request.status == 200) {
-        return;
-    }
-    update_get_response(url, request);
-}
-
-function handle_post_response(url, request) {
-    if (request.status == 200) {
-        return;
-    }
-    update_post_response(url, request);
-
-}
-
-
-
 (function () {
     'use strict';
-    var originalOpen = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function (method, url) {
-        this.addEventListener("readystatechange", function () {
-            if (this.readyState === 4) {
-                if (method == "GET") {
-                    // console.log(url, this.status);
-                    handle_get_response(url, this);
-                } else if (method == "POST") {
-                    handle_post_response(url, this);
+    init_help();
+
+    const OriginalXHR = window.XMLHttpRequest;
+
+    function createFakeXHR() {
+        let handlers = {};
+        let xhr = {
+            readyState: 4,
+            status: 200,
+            statusText: "OK",
+            responseText: JSON.stringify({ message: "fake response" }),
+            response: JSON.stringify({ message: "fake response" }),
+
+            open(method, url, async = true) {
+                this._method = method;
+                this._url = url;
+            },
+
+            send(body) {
+                console.log("[FakeXHR] 拦截并模拟响应", this._url);
+
+                // 根据不同 URL 返回不同内容
+                let responseData = {};
+
+                if (
+                    this._url.includes("api/pku_hole") && this._url.includes("page") && !this._url.includes("keyword")
+                ) {
+                    responseData = gen_hole_pages(parse_args(this._url));
+                } else if (this._url.includes("api/pku_hole") && this._url.includes("page") && this._url.includes("keyword")) {
+                    responseData = gen_search_page(parse_args(this._url));
+                } else if (this._url.includes("pku_comment_v3")) {
+                    const kwargs = parse_args(this._url);
+                    let pid = Number(this._url.match(/comment_v3\/(\d+)\?/)[1]);
+                    responseData = gen_hole_comment(kwargs, pid);
+                } else if (this._url.includes("/api/pku/")) {
+                    let pid = Number(this._url.split("/api/pku/")[1]);
+                    responseData = gen_pku_hole(pid);
+                } else if (this._url.includes("/api/pku_hole")) {
+                    let pid = Number(this._url.split("pid=")[1]);   
+                    responseData = gen_pid_hole_page(pid);
+                } else if (this._url.includes("api/follow_v2")) {
+                    responseData = gen_followed_holes(parse_args(this._url));
+                } else if (this._url.includes("api/pku_attention")) {
+                    let pid = Number(this._url.split("pku_attention/")[1]);
+                    responseData = set_attention(pid);
+                } else {
+                    console.warn("[FakeXHR] 未处理的请求 URL:", this._url);
+                }
+
+                this.responseText = JSON.stringify(responseData);
+                this.response = this.responseText;
+
+                // 模拟异步触发事件
+                setTimeout(() => {
+                    if (typeof this.onreadystatechange === "function") {
+                        this.onreadystatechange();
+                    }
+                    if (typeof this.onload === "function") {
+                        this.onload();
+                    }
+                }, 0);
+            },
+
+            setRequestHeader() { },
+            getAllResponseHeaders() { return ""; },
+            getResponseHeader() { return null; },
+            abort() { },
+
+            addEventListener(type, cb) {
+                handlers[type] = cb;
+            },
+
+            dispatchEvent(event) {
+                if (handlers[event.type]) {
+                    handlers[event.type](event);
                 }
             }
+        };
+        return xhr;
+    }
+
+    // 代理构造函数
+    window.XMLHttpRequest = function () {
+        const fake = createFakeXHR();
+        const real = new OriginalXHR();
+
+        // 判断 URL 是否要拦截，在 open 中实现
+        const proxy = new Proxy(fake, {
+            get(target, prop) {
+                if (prop === 'open') {
+                    return function (method, url, async) {
+                        // 控制是否要拦截
+                        if (
+                            (url.includes("api/pku_hole") && url.includes("page")) ||
+                            url.includes("pku_comment_v3") ||
+                            url.includes("/api/pku/") ||
+                            url.includes("/api/pku_hole") ||
+                            url.includes("api/follow_v2") ||
+                            url.includes("api/pku_attention")
+                        ) {
+                            target._intercepted = true;
+                            return target.open(method, url, async);
+                        } else {
+                            target._intercepted = false;
+                            return real.open(method, url, async);
+                        }
+                    };
+                }
+                if (prop === 'send') {
+                    return function (body) {
+                        if (target._intercepted) {
+                            return target.send(body);
+                        } else {
+                            return real.send(body);
+                        }
+                    };
+                }
+                if (target._intercepted) {
+                    return target[prop];
+                } else {
+                    return real[prop];
+                }
+            },
+            set(target, prop, value) {
+                if (target._intercepted) {
+                    target[prop] = value;
+                } else {
+                    real[prop] = value;
+                }
+                return true;
+            }
         });
-        originalOpen.apply(this, arguments);
+
+        return proxy;
     };
+
+    window.XMLHttpRequest.prototype = OriginalXHR.prototype;
 
 
 })();
