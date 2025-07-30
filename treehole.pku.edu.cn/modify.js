@@ -156,6 +156,7 @@ function gen_pid_hole_page(pid) {
 function gen_search_page(kwargs) {
     let limit = Number(kwargs["limit"]);
     let page = Number(kwargs["page"]);
+    let keyword = decodeURIComponent(kwargs["keyword"]);
     const hole_list = localStorage.getItem("hole_list");
     let hole_pid_list = JSON.parse(hole_list).reverse();
     let start, end;
@@ -167,7 +168,7 @@ function gen_search_page(kwargs) {
         let pid = hole_pid_list[i];
         let hole = JSON.parse(localStorage.getItem("hole_" + pid));
 
-        if (hole["text"] && hole["text"].includes(kwargs["keyword"])) {
+        if (hole["text"] && hole["text"].includes(keyword)) {
             if (count == count_begin) {
                 start = i;
                 hole_page.push(hole);
