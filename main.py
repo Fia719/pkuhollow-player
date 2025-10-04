@@ -17,7 +17,11 @@ def tags():
 
 @app.route('/modify.js')
 def modify():
-    return render_template('modify.js')
+    return send_from_directory(app.static_folder, 'modify.js', mimetype='application/javascript')
+
+@app.route('/firebase.js')
+def firebase():
+    return send_from_directory(app.static_folder, 'firebase.js', mimetype='application/javascript')
 
 @app.route('/import_data.js')
 def import_data():

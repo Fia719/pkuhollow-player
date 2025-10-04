@@ -1,4 +1,7 @@
+import { analytics, logEvent } from "./firebase.js";
 
+
+logEvent(analytics, 'page_view');
 
 function parse_args(url) {
     const args = url.split("?");
@@ -13,6 +16,8 @@ function parse_args(url) {
 }
 
 function gen_hole_pages(kwargs) {
+    logEvent(analytics, 'gen_hole_pages', { page: kwargs["page"] });
+
     let limit = Number(kwargs["limit"]);
     let page = Number(kwargs["page"]);
     const hole_list = localStorage.getItem("hole_list");
