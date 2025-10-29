@@ -54,54 +54,75 @@ async function parseFile(file) {
 }
 
 
-function update_data(file_data) {
-	// holes
-	console.log("update_data", file_data);
-	if (file_data.holes) {
-		var hole_pid_list = [];
-		for (const hole of file_data.holes) {
-			const pid = hole.pid;
-			const hole_key = "hole_" + pid.toString();
-			localStorage.setItem(hole_key, JSON.stringify(hole));
-			hole_pid_list.push(pid);
-		}
-		// merge old pid_list and new pid_list
-		const hole_list_key = "hole_list";
-		const old_pid_list_str = localStorage.getItem(hole_list_key);
-		if (old_pid_list_str) {
-			const old_pid_list = JSON.parse(old_pid_list_str);
-			hole_pid_list = hole_pid_list.concat(old_pid_list);
-			// deduplicate
-			hole_pid_list = Array.from(new Set(hole_pid_list));
-		}
-		// sort
-		hole_pid_list.sort();
-		localStorage.setItem(hole_list_key, JSON.stringify(hole_pid_list));
-	}
-	if (file_data.comments) {
-		for (const hole_comments of file_data.comments) {
-			if (!hole_comments[0]) {
-				continue;
-			}
-			const pid = hole_comments[0][0].pid;
-			const pid_comments_key = "comments_" + pid.toString();
-			var comment_map = {};
-			// load old comments
-			const old_comments_str = localStorage.getItem(pid_comments_key);
-			if (old_comments_str) {
-				comment_map = JSON.parse(old_comments_str);
-			}
-			for (const hole_comments_chunk_list of hole_comments) {
-				for (const hole_comment of hole_comments_chunk_list) {
-					const cid = hole_comment.cid;
-					comment_map[cid] = hole_comment;
-				}
-			}
-			localStorage.setItem(pid_comments_key, JSON.stringify(comment_map));
-		}
-	}
+// REPLACE the old update_data function with this one
+async function update_data(file_data) {
+    // Our backup JSON is directly a list of posts
+    const all_posts = file_data; // Assume file_data is the array from our JSON
 
+    if (!Array.isArray(all_posts)) {
+        console.error("Imported data is not an array of posts!");
+        alert("导入失败：JSON文件格式似乎不是预期的帖子列表。");
+        return;
+    }
 
+    console.log(`Processing ${all_posts.length} posts from imported file...`);
+
+    var current_hole_pid_list = [];
+
+    for (const post of all_posts) {
+        if (!post || typeof post.pid === 'undefined') {
+            console.warn("Skipping invalid post object:", post);
+            continue;
+        }
+
+        const pid = post.pid;
+        const hole_key = "hole_" + pid.toString();
+        const comments_key = "comments_" + pid.toString();
+
+        // Separate comments from the main post data for storage
+        const comments_data = post.comments_data || [];
+        // Create a copy of the post object without comments_data for hole storage
+        const hole_data_to_store = { ...post };
+        delete hole_data_to_store.comments_data;
+
+        // Store the main hole data
+        localStorage.setItem(hole_key, JSON.stringify(hole_data_to_store));
+
+        // Store the comments data (as an array, which modify.js will handle)
+        localStorage.setItem(comments_key, JSON.stringify(comments_data));
+
+        current_hole_pid_list.push(pid);
+    }
+
+    // Merge old pid_list and new pid_list from this file
+    const hole_list_key = "hole_list";
+    const old_pid_list_str = localStorage.getItem(hole_list_key);
+    let combined_pid_list = current_hole_pid_list;
+
+    if (old_pid_list_str) {
+        try {
+            const old_pid_list = JSON.parse(old_pid_list_str);
+            combined_pid_list = combined_pid_list.concat(old_pid_list);
+        } catch (e) {
+            console.error("Error parsing existing hole list, overwriting.", e);
+        }
+    }
+
+    // Deduplicate and sort (numerically)
+    combined_pid_list = Array.from(new Set(combined_pid_list)).sort((a, b) => a - b);
+
+    localStorage.setItem(hole_list_key, JSON.stringify(combined_pid_list));
+    console.log(`Updated hole list stored. Total unique PIDs: ${combined_pid_list.length}`);
+}
+
+// ALSO, find the line: var file_data = await parseFile(file);
+// And REPLACE the line BELOW it: console.log("file_data", file_data);
+// With this line to handle potential errors during update:
+try {
+    await update_data(file_data); // Use await here if update_data becomes async
+} catch (error) {
+    console.error(`Error processing file ${file.name}:`, error);
+    alert(`处理文件 ${file.name} 时出错: ${error.message}`);
 }
 
 function init_import_data() {
